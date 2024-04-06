@@ -1,12 +1,24 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { CopilotBackend, OpenAIAdapter } from '@copilotkit/backend';
+import { Request, Response } from 'express';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
-
   @Get()
   getHello(): string {
-    return this.appService.getHello();
+    return 'Hello World!';
+  }
+
+  @Post('copilot')
+  async copilot(
+    @Req() request: Request,
+    @Res() response: Response,
+  ): Promise<void> {
+    const copilotKit = new CopilotBackend();
+    await copilotKit.streamHttpServerResponse(
+      request,
+      response,
+      new OpenAIAdapter(),
+    );
   }
 }
